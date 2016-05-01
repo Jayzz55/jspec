@@ -6,22 +6,19 @@ class Test
   end
 
   def self.run_all_tests
+    reporter = Reporter.new
+
     TESTS.each do |klass|
-      klass.run
+      klass.run reporter
     end
-    puts
+
+    reporter.done
   end
 
-  def self.run
+  def self.run reporter
     public_instance_methods.grep(/_test$/).each do |name|
       e = self.new.run name
-      unless e then
-        print '.'
-      else 
-        puts
-        puts "Failure: #{self}##{name}: #{e.message}"
-        puts " #{e.backtrace.first}"
-      end
+      reporter.report e, name
     end
   end
 
@@ -48,3 +45,18 @@ class Test
   end
 end
 
+class Reporter
+  def report e, name
+    unless e then
+      print '.'
+    else 
+      puts
+      puts "Failure: #{self}##{name}: #{e.message}"
+      puts " #{e.backtrace.first}"
+    end
+  end
+
+  def done
+    puts
+  end
+end
