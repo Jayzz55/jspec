@@ -3,7 +3,13 @@ require './jspec'
 class YTest < Test
   def self.run
     public_instance_methods.grep(/_test$/).each do |name|
-      self.new.run name
+      begin
+        self.new.run name
+        print '.'
+      rescue => e
+        puts "Failure: #{self}##{name}: #{e.message}"
+        puts " #{e.backtrace.first}"
+      end
     end
   end
 

@@ -9,6 +9,7 @@ class Test
     TESTS.each do |klass|
       klass.run
     end
+    puts
   end
 
   def assert test, msg= "Failed test"

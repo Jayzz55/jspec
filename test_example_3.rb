@@ -3,7 +3,13 @@ require './jspec'
 class ZTest < Test
   def self.run
     public_instance_methods.grep(/_test$/).each do |name|
-      self.new.run name
+      begin
+        self.new.run name
+        print '.'
+      rescue => e
+        puts "Failure: #{self}##{name}: #{e.message}"
+        puts " #{e.backtrace.first}"
+      end
     end
   end
 
@@ -23,7 +29,7 @@ class ZTest < Test
   end
 
   def third_test
-    a = 5
+    a = 1
     assert_equal 1, a
   end
 end
