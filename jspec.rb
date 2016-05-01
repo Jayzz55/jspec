@@ -25,18 +25,18 @@ class Test
   end
 
   attr_accessor :failure, :name
+  alias failure? failure
 
   def initialize name
     self.name = name
-    self.failure = false
   end
 
   def run
     send name
-    false
   rescue => e
     self.failure = e
-    self
+  ensure
+    return self
   end
 
   def assert test, msg= "Failed test"
@@ -57,7 +57,7 @@ end
 
 class Reporter
   def report e
-    unless e then
+    unless e.failure? then
       print '.'
     else 
       puts
