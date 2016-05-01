@@ -13,13 +13,12 @@ class Test
         klass.run reporter
       end
 
-      reporter.done
+      reporter.summary
     end
 
     def run reporter
       public_instance_methods.grep(/_test$/).each do |name|
-        e = self.new(name).run
-        reporter.report e
+        reporter << self.new(name).run
       end
     end
   end
@@ -56,17 +55,33 @@ class Test
 end
 
 class Reporter
-  def report result
+  attr_accessor :failures
+
+  def initialize
+    self.failures = []
+  end
+
+  def << result
     unless result.failure? then
       print '.'
     else 
-      puts
-      puts "Failure: #{result.class}##{result.name}: #{result.failure.message}"
-      puts " #{result.failure.backtrace.first}"
+      print 'F'
+      failures << result
     end
   end
 
-  def done
+  def summary
     puts
+
+    print_failures
+  end
+
+  def print_failures
+    failures.each do |result|
+      failure = result.failure
+      puts
+      puts "Failure: #{result.class}##{result.name}: #{failure.message}"
+      puts " #{failure.backtrace.first}"
+    end
   end
 end
