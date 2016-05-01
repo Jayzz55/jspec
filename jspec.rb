@@ -17,9 +17,13 @@ class Test
     end
 
     def run reporter
-      public_instance_methods.grep(/_test$/).each do |name|
+      test_names.shuffle.each do |name|
         reporter << self.new(name).run
       end
+    end
+
+    def test_names
+      public_instance_methods.grep(/_test$/)
     end
   end
 
