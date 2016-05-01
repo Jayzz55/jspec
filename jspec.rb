@@ -1,32 +1,41 @@
 class Test
   TESTS = []
 
-  def self.inherited x
-    TESTS << x
-  end
-
-  def self.run_all_tests
-    reporter = Reporter.new
-
-    TESTS.each do |klass|
-      klass.run reporter
+  class << self
+    def inherited x
+      TESTS << x
     end
 
-    reporter.done
+    def run_all_tests
+      reporter = Reporter.new
+
+      TESTS.each do |klass|
+        klass.run reporter
+      end
+
+      reporter.done
+    end
+
+    def run reporter
+      public_instance_methods.grep(/_test$/).each do |name|
+        e = self.new.run name
+        reporter.report e, self, name
+      end
+    end
   end
 
-  def self.run reporter
-    public_instance_methods.grep(/_test$/).each do |name|
-      e = self.new.run name
-      reporter.report e, name
-    end
+  attr_acessor :failure
+
+  def initialize
+    self.failure = false
   end
 
   def run name
     send name
     false
   rescue => e
-    e
+    self.failure = e
+    self
   end
 
   def assert test, msg= "Failed test"
@@ -46,13 +55,13 @@ class Test
 end
 
 class Reporter
-  def report e, name
+  def report e, k, name
     unless e then
       print '.'
     else 
       puts
-      puts "Failure: #{self}##{name}: #{e.message}"
-      puts " #{e.backtrace.first}"
+      puts "Failure: #{k}##{name}: #{e.failure.message}"
+      puts " #{e.failure.backtrace.first}"
     end
   end
 
