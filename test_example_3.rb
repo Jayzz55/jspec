@@ -1,6 +1,6 @@
 require './jspec'
 
-class XTest
+class ZTest < Test
   def self.run
     public_instance_methods.grep(/_test$/).each do |name|
       self.new.run name
@@ -23,9 +23,7 @@ class XTest
   end
 
   def third_test
-    a = 1
+    a = 5
     assert_equal 1, a
   end
 end
-
-XTest.run
