@@ -18,19 +18,20 @@ class Test
 
     def run reporter
       public_instance_methods.grep(/_test$/).each do |name|
-        e = self.new.run name
-        reporter.report e, self, name
+        e = self.new(name).run
+        reporter.report e
       end
     end
   end
 
-  attr_acessor :failure
+  attr_accessor :failure, :name
 
-  def initialize
+  def initialize name
+    self.name = name
     self.failure = false
   end
 
-  def run name
+  def run
     send name
     false
   rescue => e
@@ -46,7 +47,7 @@ class Test
   end
 
   def assert_equal a, b
-    assert a == b, "Failled assert_equal #{a} vs #{b}"
+    assert a == b, "Failed assert_equal #{a} vs #{b}"
   end
 
   def assert_in_delta a, b
@@ -55,12 +56,12 @@ class Test
 end
 
 class Reporter
-  def report e, k, name
+  def report e
     unless e then
       print '.'
     else 
       puts
-      puts "Failure: #{k}##{name}: #{e.failure.message}"
+      puts "Failure: #{e.class}##{e.name}: #{e.failure.message}"
       puts " #{e.failure.backtrace.first}"
     end
   end
