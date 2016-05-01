@@ -56,13 +56,13 @@ class Test
 end
 
 class Reporter
-  def report e
-    unless e.failure? then
+  def report result
+    unless result.failure? then
       print '.'
     else 
       puts
-      puts "Failure: #{e.class}##{e.name}: #{e.failure.message}"
-      puts " #{e.failure.backtrace.first}"
+      puts "Failure: #{result.class}##{result.name}: #{result.failure.message}"
+      puts " #{result.failure.backtrace.first}"
     end
   end
 
